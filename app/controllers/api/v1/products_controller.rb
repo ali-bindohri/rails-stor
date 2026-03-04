@@ -5,15 +5,15 @@ class Api::V1::ProductsController < ApplicationController
   def index
     @products = Product.all
     @products = apply_filters(@products, [:name, :price, :quantity, :seller_id])
-    render json: @products
+    render_success(products: @products)
   end
 
   def create 
     @product =current_user.products.build(product_params)
       if @product.save
-        render json: {message: "Product created successfully", product: {id: @product.id, name: @product.name, description: @product.description, price: @product.price, quantity: @product.quantity, seller: {id: @product.seller.id, email: @product.seller.email}}}, status: :created
+        render_success(message: "Product created successfully", product: {id: @product.id, name: @product.name, description: @product.description, price: @product.price, quantity: @product.quantity, seller: {id: @product.seller.id, email: @product.seller.email}})
       else
-        render json: { errors: @product.errors.full_messages }, status: :unprocessable_entity
+        render_error(errors: @product.errors.full_messages)
       end
   end
   

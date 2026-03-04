@@ -4,15 +4,15 @@ class Api::V1::SessionsController < ApplicationController
     if @user&.authenticate(params[:password])
       token = save_token_in_cookie(@user)
       time = Time.now + 24.hours.to_i
-      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"),
-                     user: { id: @user.id, email: @user.email, type: @user.type } }, status: :ok
+      render_success(token: token, exp: time.strftime("%m-%d-%Y %H:%M"),
+                     user: { id: @user.id, email: @user.email, type: @user.type })
     else
-      render json: { error: 'unauthorized' }, status: :unauthorized
+      render_error(message: 'unauthorized')
     end
   end
   
   def destroy 
     clear_token_from_cookie
-    render json: { message: 'logged out successfully' }, status: :ok
+    render_success(message: 'logged out successfully')
   end
 end

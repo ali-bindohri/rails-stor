@@ -9,10 +9,10 @@ class Api::V1::RegistrationsController < ApplicationController
     if @user.save
       token = save_token_in_cookie(@user)
       time = Time.now + 24.hours.to_i
-      render json: { token: token, exp: time.strftime("%m-%d-%Y %H:%M"),
-                     user: { id: @user.id, email: @user.email, type: @user.type } }, status: :created
+      render_success(token: token, exp: time.strftime("%m-%d-%Y %H:%M"),
+                     user: { id: @user.id, email: @user.email, type: @user.type })
     else
-      render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
+      render_error(errors: @user.errors.full_messages)
     end
   end
 
