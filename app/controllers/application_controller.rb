@@ -1,6 +1,10 @@
 class ApplicationController < ActionController::API
   include TokenAuthenticatable
   include ActionController::Cookies
+  include Filterable
+  include Authorizable
+  include ResponseRenderer
+
   def authorize_request
     # header = request.headers['Authorization']
     # header = header.split(' ').last if header
@@ -32,7 +36,20 @@ class ApplicationController < ActionController::API
     header = header.split(' ').last if header
     header
   end
+  
   def current_user
-    @current_user ||= User.find(@decoded[:user_id])
+    return @current_user if @current_user
+    token = cookies.signed[:token] || extract_token_from_header
+    
+    if token
+      begin
+        decoded = JsonWebToken.decode(token)
+        @current_user = User.find_by(id: decoded[:user_id])
+      rescue
+        nil
+      end
+    end
+    
+    @current_user
   end
 end

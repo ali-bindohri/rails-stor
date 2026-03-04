@@ -1,0 +1,26 @@
+class Api::V1::ProductsController < ApplicationController
+  before_action :authorize_request
+  before_action :authorize_seller, only: [:create]
+  
+  def index
+    @products = Product.all
+    @products = apply_filters(@products, [:name, :price, :quantity, :seller_id])
+    render json: @products
+  end
+
+  def create 
+    @product =current_user.products.build(product_params)
+      if @product.save
+        render json: {message: "Product created successfully", product: {id: @product.id, name: @product.name, description: @product.description, price: @product.price, quantity: @product.quantity, seller: {id: @product.seller.id, email: @product.seller.email}}}, status: :created
+      else
+        render json: { errors: @product.errors.full_messages }, status: :unprocessable_entity
+      end
+  end
+  
+
+  private
+
+  def product_params
+    params.permit(:name, :description, :price, :quantity)
+  end
+end
