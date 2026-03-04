@@ -18,7 +18,8 @@ class Api::V1::CartsController < ApplicationController
     return render json: { items: [], total_amount: 0 }, status: :ok unless cart
 
     total_amount = cart.cart_items.sum { |item| item.product.price * item.quantity }
-    render_success(items: cart.cart_items, total_amount: total_amount)
+    data = { items: cart.cart_items, total_amount: total_amount }
+    render_success(data:data)
   end
 
   def remove_item
@@ -30,5 +31,14 @@ class Api::V1::CartsController < ApplicationController
     
     cart_item.destroy
     render_success(message: 'Product removed from cart')
+  end
+
+  def checkout 
+    result = CheckoutService.new(current_user).call
+    if result[:success]
+      render_success(message: 'Order created successfully', data: {order: result[:order]})
+    else
+      render_error(message: result[:error])
+    end
   end
 end

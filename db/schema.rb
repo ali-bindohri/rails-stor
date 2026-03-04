@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_04_120616) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_04_141342) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_120616) do
     t.index ["customer_id"], name: "index_carts_on_customer_id"
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
+    t.string "status"
+    t.decimal "total_amount"
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -43,6 +52,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_120616) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.decimal "balance", default: "0.0"
     t.datetime "created_at", null: false
     t.string "email"
     t.string "first_name"
@@ -55,5 +65,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_04_120616) do
   add_foreign_key "cart_items", "carts"
   add_foreign_key "cart_items", "products"
   add_foreign_key "carts", "users", column: "customer_id"
+  add_foreign_key "orders", "users", column: "customer_id"
   add_foreign_key "products", "users", column: "seller_id"
 end
