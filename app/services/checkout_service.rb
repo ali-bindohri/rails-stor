@@ -21,7 +21,10 @@ class CheckoutService
 
         product.update!(quantity: product.quantity - item.quantity)
         seller.update!(balance: seller.balance + item.product.price * item.quantity)
-        
+
+        order.order_items.create!(product:product, 
+                                  quantity:item.quantity, 
+                                  price:item.product.price)
       end 
   
       @cart.cart_items.destroy_all
