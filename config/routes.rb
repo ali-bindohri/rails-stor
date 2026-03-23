@@ -11,4 +11,17 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  namespace :api do
+    namespace :v1 do
+      post "/signup", to: "registrations#create"
+      post "/login", to: "sessions#create"
+      get "/users", to: "users#index"
+      resources :products, only: [:create, :index]
+      resource :cart, only: [] do
+        post 'add_item', to: 'carts#add_item'
+        get 'items', to: 'carts#items'
+        post 'checkout', to: 'carts#checkout'
+      end
+    end
+  end
 end
